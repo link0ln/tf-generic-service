@@ -3,15 +3,8 @@ provider "vault" {
   token     = var.vault_token
 }
 
-resource "vault_mount" "service_name" {
-  path        = "${var.service_namespace}"
-  type        = "kv"
-  options     = { version = "2" }
-  description = "KV for namespace ${var.service_namespace} "
-}
-
 resource "vault_kv_secret_v2" "secret_env" {
-  mount                      = vault_mount.service_name.path
+  mount                      = "${var.service_namespace}"
   name                       = "${var.service_name}/${var.service_env}/env"
   cas                        = 1
   delete_all_versions        = true
@@ -25,7 +18,7 @@ resource "vault_kv_secret_v2" "secret_env" {
 }
 
 resource "vault_kv_secret_v2" "secret_kv" {
-  mount                      = vault_mount.service_name.path
+  mount                      = "${var.service_namespace}"
   name                       = "${var.service_name}/${var.service_env}/kv"
   cas                        = 1
   delete_all_versions        = true

@@ -1,108 +1,97 @@
-module "vault_module" {
-  source = "./modules/vault"
-  vault_address = var.vault_address
-  vault_token = var.vault_token
-  service_name = var.service_name
-  service_namespace = var.service_namespace
-  service_env = var.service_env
-  service_image_repo = var.service_image_repo
-  service_image_tag = var.service_image_tag
-}
-
 provider "argocd" {
   server_addr = "${var.argocd_address}"
   auth_token  = "${var.argocd_token}"
 }
 
-resource "argocd_repository" "private" {
-  repo     = "${var.service_repo}"
-}
-
-resource "argocd_project" "target_project" {
-  metadata {
-    name      = "${var.argocd_project}"
-    labels = {
-      acceptance = "true"
-    }
-    annotations = {
-      "this.is.a.really.long.nested.key" = ""
-    }
-  }
-
-  spec {
-    description  = "${var.argocd_project} project"
-    source_repos = ["${var.service_repo}"]
-
-    destination {
-      server    = "https://kubernetes.default.svc"
-      namespace = "${var.service_namespace}" 
-    }
-    # need to be inspected to allow how to create namespaces
-    #cluster_resource_blacklist {
-    #  group = "*"
-    #  kind  = "*"
-    #}
-    cluster_resource_whitelist {
-      group = "rbac.authorization.k8s.io"
-      kind  = "ClusterRoleBinding"
-    }
-    cluster_resource_whitelist {
-      group = "rbac.authorization.k8s.io"
-      kind  = "ClusterRole"
-    }
-    cluster_resource_whitelist {
-      group = "*"
-      kind  = "Namespace"
-    }
-    namespace_resource_blacklist {
-      group = "networking.k8s.io"
-      kind  = "Ingress"
-    }
-    namespace_resource_whitelist {
-      group = "*"
-      kind  = "*"
-    }
-    orphaned_resources {
-      warn = true
-
-      ignore {
-        group = "apps/v1"
-        kind  = "Deployment"
-        name  = "ignored1"
-      }
-      ignore {
-        group = "apps/v1"
-        kind  = "Deployment"
-        name  = "ignored2"
-      }
-    }
-    role {
-      name = "deploy-role"
-      description = "Role for use in argocli from pipleine"
-      policies = [
-        "p, proj:${var.argocd_project}:deploy-role, applications, *, ${var.argocd_project}/*, allow",
-      ]
-    }
-    sync_window {
-      kind         = "allow"
-      applications = ["${var.service_name}"]
-      namespaces   = ["${var.service_namespace}"]
-      duration     = "12h"
-      schedule     = "0 * * * *"
-      manual_sync  = false
-    }
-  }
-}
-
-resource "argocd_project_token" "secret" {
-  depends_on = [
-    argocd_project.target_project
-  ]
-  count        = 1
-  project      = "${var.argocd_project}"
-  role         = "deploy-role"
-  description  = "for deploy from pipline"
-}
+#resource "argocd_repository" "private" {
+#  repo     = "${var.service_repo}"
+#}
+#
+#resource "argocd_project" "target_project" {
+#  metadata {
+#    name      = "${var.argocd_project}"
+#    labels = {
+#      acceptance = "true"
+#    }
+#    annotations = {
+#      "this.is.a.really.long.nested.key" = ""
+#    }
+#  }
+#
+#  spec {
+#    description  = "${var.argocd_project} project"
+#    source_repos = ["${var.service_repo}"]
+#
+#    destination {
+#      server    = "https://kubernetes.default.svc"
+#      namespace = "${var.service_namespace}" 
+#    }
+#    # need to be inspected to allow how to create namespaces
+#    #cluster_resource_blacklist {
+#    #  group = "*"
+#    #  kind  = "*"
+#    #}
+#    cluster_resource_whitelist {
+#      group = "rbac.authorization.k8s.io"
+#      kind  = "ClusterRoleBinding"
+#    }
+#    cluster_resource_whitelist {
+#      group = "rbac.authorization.k8s.io"
+#      kind  = "ClusterRole"
+#    }
+#    cluster_resource_whitelist {
+#      group = "*"
+#      kind  = "Namespace"
+#    }
+#    namespace_resource_blacklist {
+#      group = "networking.k8s.io"
+#      kind  = "Ingress"
+#    }
+#    namespace_resource_whitelist {
+#      group = "*"
+#      kind  = "*"
+#    }
+#    orphaned_resources {
+#      warn = true
+#
+#      ignore {
+#        group = "apps/v1"
+#        kind  = "Deployment"
+#        name  = "ignored1"
+#      }
+#      ignore {
+#        group = "apps/v1"
+#        kind  = "Deployment"
+#        name  = "ignored2"
+#      }
+#    }
+#    role {
+#      name = "deploy-role"
+#      description = "Role for use in argocli from pipleine"
+#      policies = [
+#        "p, proj:${var.argocd_project}:deploy-role, applications, *, ${var.argocd_project}/*, allow",
+#      ]
+#    }
+#    sync_window {
+#      kind         = "allow"
+#      applications = ["${var.service_name}"]
+#      namespaces   = ["${var.service_namespace}"]
+#      duration     = "12h"
+#      schedule     = "0 * * * *"
+#      manual_sync  = false
+#    }
+#  }
+#}
+#
+#resource "argocd_project_token" "secret" {
+#  depends_on = [
+#    argocd_project.target_project
+#  ]
+#  count        = 1
+#  project      = "${var.argocd_project}"
+#  role         = "deploy-role"
+#  description  = "for deploy from pipline"
+#}
 
 #output "argocd_jwt-token" {
 #  value = argocd_project_token.secret
@@ -125,16 +114,17 @@ resource "argocd_application" "app_argocd_application" {
     }
   }
 
-  depends_on = [
-    argocd_project.target_project
-  ]
+  #depends_on = [
+  #  argocd_project.target_project
+  #]
 
   wait = false
 
   spec {
-    project = argocd_project.target_project.metadata[0].name
+    #project = argocd_project.target_project.metadata[0].name
+    project = "${var.argocd_project}"
     source {
-      repo_url        = argocd_repository.private.repo
+      repo_url        = var.argocd_repository
       path            = "charts/generic-service"
       target_revision = "${var.service_repo_ver}"
       #helm {
@@ -178,7 +168,7 @@ resource "argocd_application" "app_argocd_application" {
         env {
           name = "VAULT_TOKEN"
           #value = "${vault_token.app-service-token.client_token}"
-          value = module.vault_module.vault-token-secret
+          value = "${var.vault_token_generated}"
         }
         env {
           name = "PYDEBUG"
@@ -189,7 +179,7 @@ resource "argocd_application" "app_argocd_application" {
           value = <<EOF
              {
                "namespace": "${var.service_namespace}",
-               "fullnameOverride": "${var.service_name}",
+               "fullnameOverride": "${var.service_name}-${var.service_env}",
                "podenv": "<path:${var.service_namespace}/${var.service_name}/${var.service_env}/env>",
                "image_repository": "<path:${var.service_namespace}/${var.service_name}/${var.service_env}/kv#image>",
                "image_tag": "<path:${var.service_namespace}/${var.service_name}/${var.service_env}/kv#tag>"
@@ -222,4 +212,3 @@ resource "argocd_application" "app_argocd_application" {
     }
   }
 }
-
