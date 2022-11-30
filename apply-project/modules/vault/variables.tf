@@ -4,10 +4,10 @@ variable "vault_address" {
 variable "vault_token" {
   type = string
 }
-variable "service_name" {
+variable "vault_wallet_name" {
   type = string
 }
-variable "service_namespace" {
+variable "service_name" {
   type = string
 }
 variable "service_env" {

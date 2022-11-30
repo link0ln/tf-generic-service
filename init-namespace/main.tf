@@ -4,21 +4,21 @@ provider "argocd" {
 }
 
 resource "argocd_repository" "private" {
-  repo     = "${var.service_repo}"
+  repo     = "${var.helm_repo}"
 }
 
-output "argocd_project_var" {
-  value = "${var.argocd_project}"
-}
+#output "service_namespace_var" {
+#  value = "${var.project_name}-${var.project_env}"
+#}
 
-output "argocd_repository_var" {
-  value = "${var.service_repo}"
-}
+#output "argocd_repository_var" {
+#  value = "${var.helm_repo}"
+#}
 
 
 resource "argocd_project" "target_project" {
   metadata {
-    name      = "${var.argocd_project}"
+    name      = "${var.project_name}-${var.project_env}"
     labels = {
       acceptance = "true"
     }
@@ -28,12 +28,12 @@ resource "argocd_project" "target_project" {
   }
 
   spec {
-    description  = "${var.argocd_project} project"
-    source_repos = ["${var.service_repo}"]
+    description  = "${var.project_name}-${var.project_env} project"
+    source_repos = ["${var.helm_repo}"]
 
     destination {
       server    = "https://kubernetes.default.svc"
-      namespace = "${var.service_namespace}" 
+      namespace = "${var.project_name}-${var.project_env}" 
     }
     # need to be inspected to allow how to create namespaces
     #cluster_resource_blacklist {
@@ -78,13 +78,13 @@ resource "argocd_project" "target_project" {
       name = "deploy-role"
       description = "Role for use in argocli from pipleine"
       policies = [
-        "p, proj:${var.argocd_project}:deploy-role, applications, *, ${var.argocd_project}/*, allow",
+        "p, proj:${var.project_name}-${var.project_env}:deploy-role, applications, *, ${var.project_name}-${var.project_env}/*, allow",
       ]
     }
     sync_window {
       kind         = "allow"
       applications = ["*"]
-      namespaces   = ["${var.service_namespace}"]
+      namespaces   = ["${var.project_name}-${var.project_env}"]
       duration     = "12h"
       schedule     = "0 * * * *"
       manual_sync  = false
@@ -99,8 +99,8 @@ provider "vault" {
 }
 
 resource "vault_mount" "service_name" {
-  path        = "${var.service_namespace}"
+  path        = "${var.project_name}"
   type        = "kv"
   options     = { version = "2" }
-  description = "KV for namespace ${var.service_namespace} "
+  description = "KV for namespace ${var.project_name}"
 }

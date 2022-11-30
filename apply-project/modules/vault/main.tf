@@ -4,7 +4,7 @@ provider "vault" {
 }
 
 resource "vault_kv_secret_v2" "secret_env" {
-  mount                      = "${var.service_namespace}"
+  mount                      = "${var.vault_wallet_name}"
   name                       = "${var.service_name}/${var.service_env}/env"
   cas                        = 1
   delete_all_versions        = true
@@ -18,7 +18,7 @@ resource "vault_kv_secret_v2" "secret_env" {
 }
 
 resource "vault_kv_secret_v2" "secret_kv" {
-  mount                      = "${var.service_namespace}"
+  mount                      = "${var.vault_wallet_name}"
   name                       = "${var.service_name}/${var.service_env}/kv"
   cas                        = 1
   delete_all_versions        = true
@@ -31,9 +31,9 @@ resource "vault_kv_secret_v2" "secret_kv" {
 }
 
 resource "vault_policy" "service-policy" {
-  name   = "${var.service_namespace}-${var.service_name}-${var.service_env}-service-policy"
+  name   = "${var.vault_wallet_name}-${var.service_name}-${var.service_env}-service-policy"
   policy = <<EOT
-    path "${var.service_namespace}/data/${var.service_name}/${var.service_env}*" {
+    path "${var.vault_wallet_name}/data/${var.service_name}/${var.service_env}*" {
       capabilities = ["create", "update", "delete", "read", "list"]
     }
     path "auth/token/lookup-self" {

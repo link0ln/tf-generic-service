@@ -4,12 +4,12 @@ provider "argocd" {
 }
 
 #resource "argocd_repository" "private" {
-#  repo     = "${var.service_repo}"
+#  repo     = "${var.helm_repo}"
 #}
 #
 #resource "argocd_project" "target_project" {
 #  metadata {
-#    name      = "${var.argocd_project}"
+#    name      = "${var.project_name}-${var.service_env}"
 #    labels = {
 #      acceptance = "true"
 #    }
@@ -19,12 +19,12 @@ provider "argocd" {
 #  }
 #
 #  spec {
-#    description  = "${var.argocd_project} project"
-#    source_repos = ["${var.service_repo}"]
+#    description  = "${var.project_name}-${var.service_env} project"
+#    source_repos = ["${var.helm_repo}"]
 #
 #    destination {
 #      server    = "https://kubernetes.default.svc"
-#      namespace = "${var.service_namespace}" 
+#      namespace = "${var.project_name}-${var.service_env}" 
 #    }
 #    # need to be inspected to allow how to create namespaces
 #    #cluster_resource_blacklist {
@@ -69,13 +69,13 @@ provider "argocd" {
 #      name = "deploy-role"
 #      description = "Role for use in argocli from pipleine"
 #      policies = [
-#        "p, proj:${var.argocd_project}:deploy-role, applications, *, ${var.argocd_project}/*, allow",
+#        "p, proj:${var.project_name}-${var.service_env}:deploy-role, applications, *, ${var.project_name}-${var.service_env}/*, allow",
 #      ]
 #    }
 #    sync_window {
 #      kind         = "allow"
-#      applications = ["${var.service_name}"]
-#      namespaces   = ["${var.service_namespace}"]
+#      applications = ["*"]
+#      namespaces   = ["${var.project_name}-${var.service_env}"]
 #      duration     = "12h"
 #      schedule     = "0 * * * *"
 #      manual_sync  = false
@@ -88,7 +88,7 @@ provider "argocd" {
 #    argocd_project.target_project
 #  ]
 #  count        = 1
-#  project      = "${var.argocd_project}"
+#  project      = "${var.project_name}-${var.service_env}"
 #  role         = "deploy-role"
 #  description  = "for deploy from pipline"
 #}
@@ -106,8 +106,7 @@ provider "argocd" {
 
 resource "argocd_application" "app_argocd_application" {
   metadata {
-    name      = "${var.service_name}-${var.service_env}"
-    #namespace = "${var.service_namespace}"
+    name      = "${var.project_name}-${var.service_name}-${var.service_env}"
     labels = {
       service    = "${var.service_name}-${var.service_env}-service"
       managed-by = "Terraform"
@@ -121,32 +120,11 @@ resource "argocd_application" "app_argocd_application" {
   wait = false
 
   spec {
-    #project = argocd_project.target_project.metadata[0].name
-    project = "${var.argocd_project}"
+    project = "${var.project_name}-${var.service_env}"
     source {
-      repo_url        = var.argocd_repository
+      repo_url        = var.helm_repo
       path            = "charts/generic-service"
-      target_revision = "${var.service_repo_ver}"
-      #helm {
-      #  parameter {
-      #    name  = "fullnameOverride"
-      #    value = "${var.service_name}"
-      #  }
-      #  parameter {
-      #    name  = "vault.address"
-      #    value = "${var.vault_address}"
-      #  }
-      #  parameter {
-      #    name  = "vault.token"
-      #    value = "${vault_token.app-service-token.client_token}"
-      #  }
-      #  parameter {
-      #    name  = "namespace"
-      #    value = "${var.service_namespace}"
-      #  }
-      #  value_files  = ["values.yaml"]
-      #  release_name = var.service_name
-      #}
+      target_revision = "${var.helm_repo_ver}"
       plugin {
         name = "vault-python-wrapper-helm"
         env {
@@ -178,11 +156,11 @@ resource "argocd_application" "app_argocd_application" {
           name = "HELM_VALUES"
           value = <<EOF
              {
-               "namespace": "${var.service_namespace}",
+               "namespace": "${var.project_name}-${var.service_env}",
                "fullnameOverride": "${var.service_name}-${var.service_env}",
-               "podenv": "<path:${var.service_namespace}/${var.service_name}/${var.service_env}/env>",
-               "image_repository": "<path:${var.service_namespace}/${var.service_name}/${var.service_env}/kv#image>",
-               "image_tag": "<path:${var.service_namespace}/${var.service_name}/${var.service_env}/kv#tag>"
+               "podenv": "<path:${var.project_name}/${var.service_name}/${var.service_env}/env>",
+               "image_repository": "<path:${var.project_name}/${var.service_name}/${var.service_env}/kv#image>",
+               "image_tag": "<path:${var.project_name}/${var.service_name}/${var.service_env}/kv#tag>"
              }
           EOF
         }
@@ -208,7 +186,7 @@ resource "argocd_application" "app_argocd_application" {
 
     destination {
       server    = "https://kubernetes.default.svc"
-      namespace = "${var.service_namespace}"
+      namespace = "${var.project_name}-${var.service_env}"
     }
   }
 }
