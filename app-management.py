@@ -45,9 +45,9 @@ def run(command):
 
 def change_state():
   state_process(f'{script_path}/init-namespace/versions.tf', f'{s3_state_path_prefix}/projects/init/{project_name}/{service_name}/{project_env}/terraform.tfstate')
-  print(run(f'terraform -chdir={script_path}/init-namespace init'))
+  print(run(f'terraform -chdir={script_path}/init-namespace init -reconfigure'))
   state_process(f'{script_path}/apply-project/versions.tf', f'{s3_state_path_prefix}/projects/apply/{project_name}/{service_name}/{project_env}/terraform.tfstate')
-  print(run(f'terraform -chdir={script_path}/apply-project init'))
+  print(run(f'terraform -chdir={script_path}/apply-project init -reconfigure'))
 
 def state_process(path, s3path):
   vconfig = ""

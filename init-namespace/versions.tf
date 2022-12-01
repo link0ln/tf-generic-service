@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket = "wavesprotocol-tf-state"
-    key    = "k8sv2/projects/init/anal/karnaval/prod/terraform.tfstate"
+    key    = "k8sv2/projects/init/anal/karnaval/dev/terraform.tfstate"
     region = "eu-central-1"
     dynamodb_table = "wavesprotocol-terraform-state-locks"
     encrypt        = true

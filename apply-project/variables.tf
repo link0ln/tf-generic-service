@@ -11,7 +11,7 @@ variable "helm_repo" {
 }
 variable "helm_repo_ver" {
   type = string
-  default = "0.1.10"
+  default = "0.1.12"
 }
 variable "service_name" {
   type = string

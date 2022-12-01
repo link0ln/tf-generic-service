@@ -173,7 +173,7 @@ resource "argocd_application" "app_argocd_application" {
         self_heal   = false
         allow_empty = true
       }
-
+      sync_options = ["Validate=false","CreateNamespace=true"]
       retry {
         limit = "5"
         backoff = {
