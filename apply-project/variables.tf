@@ -19,7 +19,7 @@ variable "service_name" {
 variable "project_name" {
   type = string
 }
-variable "service_env" {
+variable "project_env" {
   type = string
 }
 variable "argocd_address" {
@@ -29,9 +29,32 @@ variable "argocd_address" {
 variable "argocd_token" {
   type = string
 }
-variable "service_image_repo" {
+variable "harbor_url" {
+  type = string
+  default = "https://registry.wvservices.com"
+}
+variable "harbor_username" {
   type = string
 }
-variable "service_image_tag" {
+variable "harbor_password" {
+  type = string
+}
+variable "action" {
+  type = string
+}
+variable "ingress" {
+  type = string
+  default = false
+}
+variable "ingress_domain" {
+  type = string
+}
+variable "cloudflare_token" {
+  type = string
+}
+variable "cloudflare_target" {
+  type = string
+}
+variable "cloudflare_zoneid" {
   type = string
 }

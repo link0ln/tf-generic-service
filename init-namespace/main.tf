@@ -1,10 +1,18 @@
+module "harbor_module" {
+  source = "./modules/harbor"
+  harbor_username = var.harbor_username
+  harbor_password = var.harbor_password
+  harbor_project =  var.project_name
+}
+
+
 provider "argocd" {
-  server_addr = "${var.argocd_address}"
-  auth_token  = "${var.argocd_token}"
+  server_addr = var.argocd_address
+  auth_token  = var.argocd_token
 }
 
 resource "argocd_repository" "private" {
-  repo     = "${var.helm_repo}"
+  repo     = var.helm_repo
 }
 
 #output "service_namespace_var" {
@@ -12,7 +20,7 @@ resource "argocd_repository" "private" {
 #}
 
 #output "argocd_repository_var" {
-#  value = "${var.helm_repo}"
+#  value = var.helm_repo
 #}
 
 

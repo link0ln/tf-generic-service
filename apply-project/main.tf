@@ -15,9 +15,9 @@ module "vault_module" {
   vault_token = var.vault_token
   vault_wallet_name = var.project_name
   service_name = var.service_name
-  service_env = var.service_env
-  service_image_repo = var.service_image_repo
-  service_image_tag = var.service_image_tag
+  service_env = var.project_env
+  service_image_repo = "${var.harbor_url}/${var.project_name}/${var.service_name}"
+  service_image_tag = "latest"
 }
 
 module "argocd_module" {
@@ -26,10 +26,22 @@ module "argocd_module" {
   argocd_token = var.argocd_token
   service_name = var.service_name
   project_name = var.project_name
-  service_env = var.service_env
+  service_env = var.project_env
   helm_repo = var.helm_repo
   helm_repo_ver = var.helm_repo_ver
   vault_address = var.vault_address
   vault_token_generated = module.vault_module.vault-token-secret
+  ingress_enabled = var.ingress
+  ingress_host = var.ingress_domain
+}
+
+module "cloudflare" {
+  source = "./modules/cloudflare"
+  cloudflare_token = var.cloudflare_token
+  cloudflare_domain = var.ingress_domain
+  cloudflare_target = var.cloudflare_target
+  cloudflare_zone_id = var.cloudflare_zoneid
+  cloudflare_target_type = "CNAME"
+  cloudflare_create_record = var.ingress
 }
 

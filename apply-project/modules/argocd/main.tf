@@ -156,11 +156,13 @@ resource "argocd_application" "app_argocd_application" {
           name = "HELM_VALUES"
           value = <<EOF
              {
-               "namespace": "${var.project_name}-${var.service_env}",
-               "fullnameOverride": "${var.service_name}-${var.service_env}",
-               "podenv": "<path:${var.project_name}/${var.service_name}/${var.service_env}/env>",
-               "image_repository": "<path:${var.project_name}/${var.service_name}/${var.service_env}/kv#image>",
-               "image_tag": "<path:${var.project_name}/${var.service_name}/${var.service_env}/kv#tag>"
+                "namespace": "${var.project_name}-${var.service_env}",
+                "fullnameOverride": "${var.service_name}-${var.service_env}",
+                "podenv": "<path:${var.project_name}/${var.service_name}/${var.service_env}/env>",
+                "image_repository": "<path:${var.project_name}/${var.service_name}/${var.service_env}/kv#image>",
+                "image_tag": "<path:${var.project_name}/${var.service_name}/${var.service_env}/kv#tag>",
+                "ingress.enabled": "${var.ingress_enabled}",
+                "ingress.hosts[0].host": "${var.ingress_host}"
              }
           EOF
         }

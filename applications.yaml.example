@@ -1,0 +1,12 @@
+- action: apply
+  project_name: inigma
+  project_env: prod
+  service_name: web
+- action: apply
+  project_name: inigma
+  project_env: prod
+  service_name: back
+- action: destory
+  project_name: inigma
+  project_env: prod
+  service_name: db

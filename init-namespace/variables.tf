@@ -22,3 +22,28 @@ variable "vault_address" {
 variable "vault_token" {
   type = string
 }
+variable "harbor_password" {
+  type = string
+}
+variable "harbor_username" {
+  type = string
+}
+variable "action" {
+  type = string
+}
+variable "service_name" {
+  type = string
+}
+variable "ingress" {
+  type = string
+}
+variable "ingress_domain" {
+  type = string
+}
+variable "cloudflare_target"{
+  type = string
+}
+variable "cloudflare_zoneid" {
+  type = string
+}
+
