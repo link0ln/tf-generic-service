@@ -2,4 +2,4 @@
 .terraform*
 apply-project/.terraform*
 init-namespace/.terraform*
-config.json
+config.yaml
