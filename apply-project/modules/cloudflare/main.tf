@@ -8,8 +8,4 @@ resource "cloudflare_record" "record" {
   value   = var.cloudflare_target
   type    = var.cloudflare_target_type
   ttl     = 300
-
-  lifecycle {
-    create_before_destroy = var.cloudflare_create_record
-  }
 }

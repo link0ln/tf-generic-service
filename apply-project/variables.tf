@@ -42,10 +42,6 @@ variable "harbor_password" {
 variable "action" {
   type = string
 }
-variable "ingress" {
-  type = string
-  default = false
-}
 variable "ingress_domain" {
   type = string
 }
@@ -55,6 +51,6 @@ variable "cloudflare_token" {
 variable "cloudflare_target" {
   type = string
 }
-variable "cloudflare_zoneid" {
+variable "cloudflare_zone_id" {
   type = string
 }

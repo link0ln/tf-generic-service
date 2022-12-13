@@ -25,9 +25,6 @@ variable "vault_address" {
 variable "vault_token_generated" {
   type = string
 }
-variable "ingress_enabled" {
-  type = string
-}
 variable "ingress_host" {
   type = string
 }

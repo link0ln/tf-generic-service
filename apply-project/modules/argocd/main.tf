@@ -161,7 +161,6 @@ resource "argocd_application" "app_argocd_application" {
                 "podenv": "<path:${var.project_name}/${var.service_name}/${var.service_env}/env>",
                 "image_repository": "<path:${var.project_name}/${var.service_name}/${var.service_env}/kv#image>",
                 "image_tag": "<path:${var.project_name}/${var.service_name}/${var.service_env}/kv#tag>",
-                "ingress.enabled": "${var.ingress_enabled}",
                 "ingress.hosts[0].host": "${var.ingress_host}"
              }
           EOF

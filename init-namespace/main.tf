@@ -2,7 +2,7 @@ module "harbor_module" {
   source = "./modules/harbor"
   harbor_username = var.harbor_username
   harbor_password = var.harbor_password
-  harbor_project =  var.project_name
+  harbor_project_name =  var.project_name
 }
 
 

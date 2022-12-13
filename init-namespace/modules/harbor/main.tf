@@ -5,7 +5,7 @@ provider "harbor" {
 }
 
 resource "harbor_project" "hproject" {
-    name                    = var.harbor_project
+    name                    = var.harbor_project_name
     public                  = false 
     vulnerability_scanning  = true  
     #enable_content_trust    = true
@@ -35,8 +35,8 @@ resource "random_string" "writeuser" {
 }
 
 resource "harbor_robot_account" "read" {
-  name        = "${var.harbor_project}-read"
-  description = "Read access project ${var.harbor_project} robot account"
+  name        = "${var.harbor_project_name}-read"
+  description = "Read access project ${var.harbor_project_name} robot account"
   secret      = random_string.readuser.result
   level       = "project"
   permissions {
@@ -50,8 +50,8 @@ resource "harbor_robot_account" "read" {
 }
 
 resource "harbor_robot_account" "write" {
-  name        = "${var.harbor_project}-write"
-  description = "Write access project ${var.harbor_project} robot account"
+  name        = "${var.harbor_project_name}-write"
+  description = "Write access project ${var.harbor_project_name} robot account"
   secret      = random_string.writeuser.result
   level       = "project"
   permissions {

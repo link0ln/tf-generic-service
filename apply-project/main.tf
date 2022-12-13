@@ -31,7 +31,6 @@ module "argocd_module" {
   helm_repo_ver = var.helm_repo_ver
   vault_address = var.vault_address
   vault_token_generated = module.vault_module.vault-token-secret
-  ingress_enabled = var.ingress
   ingress_host = var.ingress_domain
 }
 
@@ -40,8 +39,7 @@ module "cloudflare" {
   cloudflare_token = var.cloudflare_token
   cloudflare_domain = var.ingress_domain
   cloudflare_target = var.cloudflare_target
-  cloudflare_zone_id = var.cloudflare_zoneid
+  cloudflare_zone_id = var.cloudflare_zone_id
   cloudflare_target_type = "CNAME"
-  cloudflare_create_record = var.ingress
 }
 

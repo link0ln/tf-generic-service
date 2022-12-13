@@ -8,7 +8,7 @@ from pprint import pprint
 import cf_manager
 import CloudFlare
 
-s3_state_path_prefix = 'k8sv2'
+s3_state_path_prefix = 'k8sv3'
 
 script_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -54,11 +54,13 @@ def run(command):
   return output
 
 def change_state(project_name, service_name, project_env):
+  print('Change state for init -------------------------------------------------------------------')
   state_process(f'{script_path}/init-namespace/versions.tf', f'{s3_state_path_prefix}/projects/init/{project_name}/{service_name}/{project_env}/terraform.tfstate')
   print(run(f'terraform -chdir={script_path}/init-namespace init -reconfigure'))
+  print('Change state for apply -------------------------------------------------------------------')
   state_process(f'{script_path}/apply-project/versions.tf', f'{s3_state_path_prefix}/projects/apply/{project_name}/{service_name}/{project_env}/terraform.tfstate')
   print(run(f'terraform -chdir={script_path}/apply-project init -reconfigure'))
-
+  print('Change state end -------------------------------------------------------------------')
 def state_process(path, s3path):
   vconfig = ""
   with open(path, 'r') as f:
@@ -80,20 +82,22 @@ for application in applications:
     application['project_name']
     application['project_env']
     application['service_name']
-    application['ingress']
     application['ingress_domain']
     application['cloudflare_target']
+    application['cloudflare_zone_id'] = ''
   except:
     print(f'Error: no keys required keys for one of the project: project_name or project_env or service_name')
     continue
-  if application['ingress'] == 'true':
-    cf = CloudFlare.CloudFlare(token=config['cloudflare_token'])
-    zone_id = cf_manager.get_zone_id(cf, application['ingress_domain'].split('.')[1] + "." + application['ingress_domain'].split('.')[2])
-    if zone_id == None:
-      print(f'No such zone in cf accout for domain {application["ingress_domain"]}')
-      sys.exit(0)
-    else:
-      application['cloudflare_zone_id'] = zone_id
+
+
+  cf = CloudFlare.CloudFlare(token=config['cloudflare_token'])
+  zone_id = cf_manager.get_zone_id(cf, application['ingress_domain'].split('.')[1] + "." + application['ingress_domain'].split('.')[2])
+  if zone_id == None:
+    print(f'No such zone in cf accout for domain {application["ingress_domain"]}')
+    sys.exit(0)
+  else:
+    application['cloudflare_zone_id'] = zone_id
+    print(f'Zone id for domain {application["ingress_domain"]} is {zone_id}')
 
   if application['action'] == 'apply' or application['action'] == 'destroy':
     app_args = ""

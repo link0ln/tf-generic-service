@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket = "wavesprotocol-tf-state"
-    key    = "k8sv2/projects/init/inigma/web/prod/terraform.tfstate"
+    key    = "k8sv3/projects/init/inigma/back/prod/terraform.tfstate"
     region = "eu-central-1"
     dynamodb_table = "wavesprotocol-terraform-state-locks"
     encrypt        = true

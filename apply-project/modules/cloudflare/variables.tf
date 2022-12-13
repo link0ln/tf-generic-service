@@ -13,7 +13,3 @@ variable "cloudflare_zone_id" {
 variable "cloudflare_target_type" {
   type = string
 }
-variable "cloudflare_create_record" {
-  type = bool
-  default = false
-}

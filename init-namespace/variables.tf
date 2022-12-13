@@ -34,16 +34,15 @@ variable "action" {
 variable "service_name" {
   type = string
 }
-variable "ingress" {
-  type = string
-}
 variable "ingress_domain" {
   type = string
 }
 variable "cloudflare_target"{
   type = string
 }
-variable "cloudflare_zoneid" {
+variable "cloudflare_zone_id" {
   type = string
 }
-
+variable "cloudflare_token" {
+  type = string
+}

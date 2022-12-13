@@ -8,6 +8,6 @@ variable "harbor_url" {
   type = string
   default = "https://registry.wvservices.com"
 }
-variable "harbor_project" {
+variable "harbor_project_name" {
   type = string
 }

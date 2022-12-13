@@ -109,10 +109,10 @@ def valid_ip(address):
 def get_zone_id(cf, zone_name2find):
     zones = cf.zones.get(params = {'name':zone_name2find, 'per_page':1})
     for zone in zones:
-        zone_id = zone['id']
-        zone_name = zone['name']
-        if zone_name == zone_name2find:
-            return zone_id
+      zone_id = zone['id']
+      zone_name = zone['name']
+      if zone_name == zone_name2find:
+        return zone_id
 
 def getcreds():
     inifile = 'cf-creds.passwd'
@@ -125,8 +125,9 @@ def getcreds():
     return username, token
 
 def main():
-  (user,token) = getcreds()
+  #(user,token) = getcreds()
   #cf = CloudFlare.CloudFlare(email=user, token=token)
+  token = os.environ['CF_TOKEN']
   cf = CloudFlare.CloudFlare(token=token)
   if sys.argv[1] == 'getall':
     result = get_all_domains(cf)
